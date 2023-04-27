@@ -93,11 +93,22 @@ export default {
         }
     },
     mounted() {
-    axios.get('/selectFoodLabel').then(response => {
+      // /selectFoodLabel
+      let id = sessionStorage.getItem('session_id');
+      if(id==null){
+        axios.get('/selectFoodLabel',{ params: { id: id } }).then(response => {
       this.foodpic = response.data;
     }).catch(error => {
       console.log(error);
     });
+      }else{
+        axios.get('/RecommendedFood',{ params: { id: id } }).then(response => {
+      this.foodpic = response.data;
+    }).catch(error => {
+      console.log(error);
+    });
+      }
+    
   },
     methods:{
         changeStatus1(index) {

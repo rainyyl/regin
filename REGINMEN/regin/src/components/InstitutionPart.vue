@@ -25,8 +25,7 @@
                 <!-- <Icon></Icon> -->
                 <route-link class="headerLink">机构推荐</route-link>
             </li>
-            <li><route-link class="headerLink">用户推荐</route-link></li>
-            <li><route-link class="headerLink">机构自荐</route-link></li>
+            <li><route-link class="headerLink">机构申请</route-link></li>
         </div>
         <hr>
         <div class="contentList">

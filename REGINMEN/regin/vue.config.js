@@ -12,7 +12,8 @@ devServer={
   Proxy:{
     '/api':{
       target:'http://localhost:7777',
-      changeOrigin:false,
+      changeOrigin:true,
+      ws:false,
       pathRewrite:{
         '^/api':''
       }

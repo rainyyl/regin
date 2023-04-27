@@ -19,9 +19,9 @@
       <div class="content1 " v-for="(item, index) in data1" :key="index">
         <li >
           <div class="container">
-            <div class="left">&nbsp;{{ index+1 }}</div>
-            <h2 class="center h2"><a class="center h2"
-              :style="getRedColor(index)">{{ item.name }}</a></h2>
+            <div class="left" :style="getRedColor(index)">&nbsp;{{ index+1 }}</div>
+            <h2 class="center h2"><a class="center h2 a2"
+              >{{ item.name }}</a></h2>
             <div class="right">{{ item.count }}</div>
           </div>
         </li>
@@ -59,9 +59,15 @@ export default {
   },
   methods:{
     getRedColor(index) {
-  if (index < 3) {
+  if (index == 0) {
     return { color: 'rgba(249, 12, 7, 0.727)' };
-  } else {
+  } else if(index == 1){
+    return{ color:'rgba(247, 127, 8,0.801)' };
+  }
+  else if(index == 2){
+    return {color:'rgba(241, 175, 9, 0.774)'};
+  }
+  else if(index > 2){
     return { color: 'rgba(1, 32, 12, 0.862)' };
   }
 },
@@ -95,7 +101,7 @@ export default {
   border-radius: 8px;
 }
 .box3{
-  background-color: white;
+  background-color: rgb(255, 255, 255);
   display: flex;
   flex-direction: column;
   width: calc(30% - 0px);
@@ -223,6 +229,10 @@ li {
   margin-top: -5px;
   margin-left: -27px;
 }
+.a2:hover{
+    color: rgba(10, 82, 58, 0.8) !important;
+}
+
 .color-red {
   color: #FF0000;
 }

@@ -54,6 +54,11 @@ const routes = [
         name:'Institution',
         component:() => import('../components/InstitutionPart.vue'),
       },
+      {
+        path:'/Self',
+        name:'Self',
+        component:() => import('../components/SelfPush.vue'),
+      }
     ]
   },
   

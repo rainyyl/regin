@@ -1,5 +1,5 @@
 <template>
-  <buttonUse class="pos" buttonText="换一换">换一批</buttonUse>
+  <buttonUse class="pos" buttonText="换一换" @click="change()">换一批</buttonUse>
    <div class="container">
      <div v-for="(item, index) in data" :key="index" class="card-wrap">
        <div class="card" ref="card" @click="showPopup(index)">
@@ -80,6 +80,9 @@
        document.querySelector('.popup').style.display = 'none';
 
      },
+     change(){
+       
+     }
    },
  };
    // mounted() {

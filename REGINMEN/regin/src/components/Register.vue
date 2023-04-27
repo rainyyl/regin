@@ -46,12 +46,14 @@ export default defineComponent({
     async function submitForm() {
       try {
         const response = await axios.post('/register', registerForm);
-        if (response.status === 200) {
+        if (response.status === '注册成功') {
           // ElMessage.success('注册成功');
           console.log("success");
           window.sessionStorage.setItem('session_id', registerForm.id);
           this.$router.push('/label');
 
+        }else if(response.status === '该用户已存在，注册失败'){
+          console.log("error");
         }
       } catch (error) {
         // ElMessage.error('注册失败，请检查用户名或邮箱是否已被使用');
