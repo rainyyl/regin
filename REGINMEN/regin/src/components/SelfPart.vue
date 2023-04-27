@@ -84,6 +84,7 @@ export default {
         this.user.label = null;
     }else{
         axios.get('/selectFoodLabel',{ params: { id: id } }).then(response => {
+            console.log(this.user)
       this.user.id = response.data.id;
       this.user.sex = response.data.sex;
       this.user.age = response.data.age;
