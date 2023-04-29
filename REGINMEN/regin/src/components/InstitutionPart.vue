@@ -89,7 +89,6 @@ export default{
   background-color: white;
   margin: 10px 120px;
   width: 1150px;
-  height: 100vh;
   padding: 10px;
   display: flex;
   flex-direction: column;

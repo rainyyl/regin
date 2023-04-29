@@ -1,7 +1,14 @@
 <template>
     <div class="backself">
         <div class="leftshow">
-            <div class="tablelink">
+          <div class="lefttop">
+            
+            <div class="datashow">
+                    <div  id="pieChart" :style="{width: '500px', height: '400px'}">
+                    </div>
+                </div>
+
+                <div class="tablelink">
                     <li><router-link active-class="active" to="/HomePage">个人资料</router-link></li>
                 
                     <li><router-link active-class="active" to="/HomePage">我的话题</router-link></li>
@@ -11,19 +18,17 @@
                     <li><router-link active-class="active" to="/HomePage">退出登录</router-link></li>
                 
             </div>
+          </div>
             <!-- 数据可视化 -->
-                 <div id="myChart" :style="{width: '700px', height: '600px'}"></div>
-                 <div class="datashow">
-                    <div  id="pieChart" :style="{width: '500px', height: '400px'}">
-                </div>
-                </div>
+                 <div class="datapotision1" id="myChart1" :style="{width: '650px', height: '600px'}"></div>
+                 
     </div>
         </div>
         <div class="rightshow">
             <div class="showuser">
                 <div class="img"><img src="../assets/head.jpg"></div>
                 <div class="name">
-                    <h2>用户名</h2>
+                    <h2>{{user.id}}</h2>
                     <button>退出登录</button>
                 </div>
             </div>
@@ -31,15 +36,26 @@
                 <div class="message">
                     <h2 class="h2"><b>基本信息显示</b></h2>
                     <form>
-                        <span>用户昵称</span><br>
+                        <span>用户昵称:</span>{{ user.id }} <br>
     
-                        <span>年龄</span><br>
-                        <span>性别</span><br>
-                        <span>电话</span><br>
+                        <span>年龄:</span>{{ user.age }}<br>
+                        <span>性别:</span>{{ user.sex }}<br>
+                        <span>电话:</span>{{ user.phone }}<br>
                         <h2><b> 标签显示/修改</b></h2>
                     </form>
                 </div>
-                
+            </div>
+            
+            <div class="bottomstyle">
+              <i class="label-item"
+              v-for="(item, key) of labelsChoosed" 
+              :key="key" >
+              <p >{{ item.name }}</p>
+            </i>            
+            </div>
+            <div>
+              <buttonUse buttonText="添加标签"></buttonUse>
+            <buttonUse buttonText="删除标签"></buttonUse>
             </div>
             
     </div>
@@ -49,13 +65,18 @@
 <script>
 import axios from 'axios';
 import * as echarts from 'echarts';
+import buttonUse from '@/style/buttonUse.vue';
 
 export default {
   name: 'EchartsUse',
+  components:{
+    buttonUse,
+  },
   data() {
     return {
       data: [],
       data2: [],
+      labelsChoosed:[],
       itemStyle: ["#3fb1e3","#c4ebad","#c4ebad","#6be6c1",
         "#3fb1e3","#c4ebad","#3fb1e3","#3fb1e3","#3fb1e3","#3fb1e3"],
         user:{
@@ -66,11 +87,9 @@ export default {
             label:[]
         },
       data3: [
-        { name: 'Data 1', value: 100 },
-        { name: 'Data 2', value: 90 },
-        { name: 'Data 3', value: 80 },
-        { name: 'Data 4', value: 70 },
-        { name: 'Data 5', value: 60 },
+        { name: '16-44岁', value: 100 },
+        { name: '44-60岁', value: 100 },
+        { name: '60岁以上', value: 100 },
       ],
     };
   },
@@ -95,19 +114,27 @@ export default {
       console.log(error);
     });
     }
-    let myChart = echarts.init(document.getElementById('myChart'));
+
+    this.fetchAgeData();
+
+    axios.get('/findUser_label',{ params: { id: sessionStorage.getItem('session_id') } }).then(response => {
+      console.log(response.data)
+            this.labelsChoosed = response.data;
+    }).catch(error => {
+      console.log(error);
+    });
+
+    let myChart1 = echarts.init(document.getElementById('myChart1'));
 
     axios.get('/findTop10').then(response => {
       this.data = response.data;
-      console.log(this.data);
-
+      
       axios.get('/findOdds').then(response => {
         this.data2 = response.data;
         console.log(this.data2);
-        
 
         // 绘制图表
-        myChart.setOption({
+        myChart1.setOption({
           title: {
             text: '网站top10标签分析',
             left: 'center',
@@ -139,7 +166,26 @@ export default {
       console.log(error);
     });
 
-    let pieChart = echarts.init(document.getElementById('pieChart'));
+    
+  },
+  methods:{
+      fetchAgeData(){
+        //获得年龄和年龄占比
+        axios.get('/AgeCount').then(response => {
+        console.log(response.data);
+        this.data3[0].value = response.data[0];
+        this.data3[1].value = response.data[1];
+        this.data3[2].value = response.data[2];
+
+        this.renderPieChart();
+      }).catch(error => {
+        console.log(error);
+      });
+    },
+
+    //绘制饼图
+    renderPieChart(){
+      let chart = echarts.init(document.getElementById('pieChart'));
     const option = {
       title: {
         text: '网站用户年龄分布',
@@ -176,11 +222,20 @@ export default {
         }
       ]
     };
+    
+      // 使用数据更新饼图的配置项
+      option.series[0].data = this.data3.map(item => ({
+      name: item.name,
+      value: item.value
+    }));
+
 
     // 使用配置项绘制图表
-    pieChart.setOption(option);
+    chart.setOption(option);
+    }
   }
-}
+};
+
 </script>
 
     <style scoped>
@@ -191,6 +246,11 @@ export default {
       display: flex;
       justify-content: space-between;
       background-color: rgb(255, 255, 255);
+      margin-top: 10px;
+    }
+    .lefttop{
+      display: flex;
+      justify-content: space-between;
     }
     .chart {
     width: 1200px;
@@ -215,19 +275,23 @@ export default {
       justify-content: flex-start;
       align-items: flex-start;
       background-color: white;
-      width: 35%;
     }
     .rightshow{
       display: flex;
       flex-direction: column;
       width: 65%;
-      justify-content: flex-start;
-      align-items: flex-start;
+      margin-top: 10px;
       margin-left: 5px;
+      margin-right: 125px;
+    }
+    .datapotision1{
+      margin-top: -150px;
+      border-top: rgba(11, 149, 89, 0.105) solid 2px;
     }
     .tablelink li{
         list-style-type: none;
-        margin: 30px 0 50px 50px;
+        margin: 50px 0 ;
+        width: 100px;
         marker: none;
     }
     a{
@@ -238,7 +302,6 @@ export default {
     }
     .message-label{
       margin-top: 5px;
-      height: 700px;
       width: 100%;
       border: black solid 1px;
     }
@@ -281,5 +344,6 @@ export default {
       margin: 5px;
       border-radius: 5px;
       cursor: pointer;
+      float: left;
     }
     </style>

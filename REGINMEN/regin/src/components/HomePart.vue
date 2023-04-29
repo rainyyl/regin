@@ -5,19 +5,19 @@
   <div>
       
     
-      <div class="title">
+      <div class="title1">
         <div class="pos1">热度推荐</div>
         
         <!-- <i class="ivu-icon ivu-icon-ios-checkmark"></i> -->
         <!-- <Icon type="md-refresh" /> -->
-        <div><CardGallery>这是热度推荐卡片</CardGallery></div>
+        <div class="margin1"><CardGallery>这是热度推荐卡片</CardGallery></div>
         
       </div>
     </div>
     
     
     <div>
-      <div class="title">
+      <div class="title1">
         <div class="pos">个人推荐</div>
         
         <div>
@@ -27,7 +27,7 @@
   </div>
   <!-- 日期推荐DatePush的组件 -->
   <div>
-  <div class="title">
+  <div class="title1">
     <div class="pos">日期推荐</div>
     <div>
       <DatePush class="Date">这就是根据日期推荐的地方</DatePush>
@@ -59,7 +59,7 @@ export default {
       links: [
         {
           key: '帮助',
-          title: '帮助',
+          title1: '帮助',
           href: 'https://www.iviewui.com',
           blankTarget: true
         },
@@ -71,7 +71,7 @@ export default {
         },
         {
           key: '条款',
-          title: '条款',
+          title1: '条款',
           href: '',
           blankTarget: true
         }
@@ -101,15 +101,8 @@ export default {
 body {
   background-color: #f5f5f5;
 }
-.title {
-  margin-top: 50px;
-  font-family: "Raleway";
-  font-size: 24px;
-  font-weight: 700;
-  color: #5D4037;
-}
 .title1{
-  margin-left: -300px;
+  margin-left: 100px;
   margin-top: 50px;
   font-family: "Raleway";
   font-size: 24px;
@@ -122,12 +115,6 @@ body {
 }
 .SelfPushing{
   margin-top: 100px;
-}
-.pos{
-  margin-left: -980px;
-}
-.pos1{
-  margin-left: -1150px;
 }
 /* .show{
   position: absolute;

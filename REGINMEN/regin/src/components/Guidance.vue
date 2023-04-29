@@ -56,7 +56,7 @@ export default {
   axios.post('/getSelectLabel', { id:id, labels_ids:labels_ids }).then(response => {
     if (response.status === 200) {
       console.log("success");
-      this.$router.push('/homePage');
+      this.$router.push('/login');
     }
   }).catch(error => {
     console.log(error);

@@ -1,79 +1,110 @@
 <template>
-  <div class="back">
-  <div class="home">
-    <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-    <!-- 设置它在跳转时不被卸载,就是在路由的index中加入children属性 -->
-    <nav-still></nav-still>
-  </div>
-  <div class="contents">
-    <div class="content">
-      <router-view></router-view>
+  <div  :class="selectedStyle" class="container">
+    <div class="home">
+      <NavStill></NavStill>
+    </div>
+    <div class="contents">
+      <div class="content">
+        <router-view></router-view>
+      </div>
     </div>
   </div>
-  
-</div>
-<div>
-    <GlobalFooter :links="links" :copyright="copyright" />
+  <div>
+    <GlobalFooter :links="links" :copyright="copyright"/>
   </div>
 </template>
 
 <script>
-import 'view-ui-plus/dist/styles/viewuiplus.css'
-// import { Icon } from "view-ui-plus";
+import axios from 'axios';
+import NavStill from "../components/NavStill.vue";
 
-// @ is an alias to /src
-import NavStill from "@/components/NavStill.vue";
 export default {
   components: {
-    // Guidance,
     NavStill,
   },
-  // beforeRouteUpdate (to, from, next) {
-  //   // 缓存需要展示导航栏的页面组件
-  //   if (to.matched.some(record => record.meta.keepAlive)) {
-  //     this.$store.dispatch('addAlivePage', to.name)
-  //   }
-  //   next()
-  // },
-  // beforeRouteLeave (to, from, next) {
-  //   // 删除不需要展示导航栏的页面组件缓存
-  //   if (from.matched.some(record => !record.meta.keepAlive)) {
-  //     this.$store.dispatch('removeAlivePage', from.name)
-  //   }
-  //   next()
-  // }这个是通过路由中加入meta属性保留，但是现在我选择在路由中使用children属性
+  data() {
+    return {
+      user_id: '',
+      age: 0,
+    };
+  },
+  methods: {
+    getSelectedStyle() {
+      if (sessionStorage.getItem('session_id') === '') {
+        this.user_id = '20210011';
+      }
+
+      axios.get('/findUser', { params: { id: sessionStorage.getItem('session_id') } }).then(response => {
+        this.age = response.data.age;
+      });
+    },
+  },
+  computed: {
+    selectedStyle() {
+      if (this.age < 45) {
+        return "back1";
+      } else if (this.age < 61) {
+        return "back2";
+      } else {
+        return "back3";
+      }
+    },
+  },
+  mounted() {
+    this.getSelectedStyle();
+  },
 };
 </script>
-<style scoped>
+
+<style scoped lang="scss">
 .home {
+  
   background-attachment: fixed;
   margin-top: 10px;
   background-image: url(../assets/cool-background.png);
 }
+
 .contents {
   display: flex;
   justify-content: center;
+  height: calc(100vh - 300px); /* 通过减去其他元素的高度来计算内容区域的高度 */
+  overflow: auto;
 }
+
 .content {
   display: flex;
   width: 1400px;
   height: 1400px;
-  /*background-color: #f0f2f3;*/
-
-}
-html,
-body {
-  margin: 0;
-  padding: 0;
 }
 
-
-.back {
-  background-image: url(../assets/back.jpg);
-  height: 4000px;
+.back1 {
+  background-image: url(../static/back6.jpg);
   margin-bottom: 0;
   border: black solid 1px;
+  background-size: 100% 100%;
+  display: flexbox;
+  height: 100vh; /* 设置容器高度为视口高度，可以根据实际需求调整 */
+  overflow: hidden;
+}
+
+.back2 {
+  background-image: url(../assets/back8.jpg);
+  margin-bottom: 0;
+  border: black solid 1px;
+  background-size: 100% 100%;
+  display: flexbox;
+  height: 100vh; /* 设置容器高度为视口高度，可以根据实际需求调整 */
+  overflow: hidden;
+}
+
+.back3 {
+  background-image: url(../assets/back.jpg);
+  margin-bottom: 0;
+  border: black solid 1px;
+  background-size: 100% 100%;
+  display: flexbox;
+  height: 100vh; /* 设置容器高度为视口高度，可以根据实际需求调整 */
+  overflow: hidden;
 }
 
 </style>

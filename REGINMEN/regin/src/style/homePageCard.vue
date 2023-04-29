@@ -3,27 +3,41 @@
   </buttonUse>
   <div class="container s">
     
-    <div v-for="(item, index) in data" :key="index" class="card-wrap">
-      <div class="card" ref="card" @click="showPopup(index)">
-        <div class="card-bg" :style="{ backgroundImage: `url(${item.vp})` }"></div>
-        <div class="card-info">
-          <h3 class="p1">{{ item.name }}</h3>
+    <div v-for="(item, index) in data" :key="index" class="card1-wrap">
+      <div class="card1" ref="card1" @click="showPopup(index)">
+        <div class="card1-bg" :style="{ backgroundImage: `url(${item.vp})` }"></div>
+        <div class="card1-info">
+          <h2 >{{ item.name }}</h2>
         </div>
       </div>
       </div>
       <div class="overlay"></div>
-      <div v-show="show" class="popup show">
+      <div v-show="show1" class="popup show1">
       <div class="split">
         <div class="left" :style="{ backgroundImage: `url(${selectedCard.vp})` }">
           
         </div>
+        
         <div class="right">
-        <h2>{{ selectedCard.name }}</h2><br>
+          //标题
+          <div>
+          <h2>{{ selectedCard.name }}</h2><br>
+        </div>
+
+        //内容
         <!-- style="white-space: pre-wrap;"可以实现\n、\r的换行实现 -->
         <p class="p2" style="white-space: pre-wrap;">{{ selectedCard.acticle }}</p>
+        
+        //评论区
+        <div v-for="(item,index) in data2" :key="index">
+        <span>{{ item.user_id }}</span>
+        <p class="p2" style="white-space: pre-wrap;">{{ item.content }}</p>
       </div>
-        <buttonUse @click="closePopup" class="btn" buttonText="关闭">Close</buttonUse>
+        
       </div>
+      <buttonUse @click="closePopup" class="btn" buttonText="关闭">Close</buttonUse>
+      </div>
+      
     </div>
       <!-- <div class="ab">
       <div v-if="showPopup[index]" class="popup">
@@ -33,7 +47,6 @@
       </div>
     </div> -->
   </div>
-  <div class="hide"></div>
 </template>
 
 <script>
@@ -48,30 +61,81 @@ export default {
   data() {
       return {
         data: [],
+        data2:[],
         selectedCard:{},
-        show:false,
+        show1:false,
+        user_id:'',
+        data_id:'',
+        d_user_id:'',
         hoverEasing: 'cubic-bezier(0.23, 0.8, 0.32, 1)',
         returnEasing: 'cubic-bezier(0.445, 0.05, 0.45, 0.95)',
+
         };
       },
       mounted() {
-    axios.get('/findDataByCount').then(response => {
-      this.data = response.data;
-    }).catch(error => {
-      console.log(error);
-    });
+  var age = 0;
+  if (sessionStorage.getItem('session_id') === '') {
+    this.user_id = '20210011';
+  }
+
+  axios.get('/findUser', { params: { id: sessionStorage.getItem('session_id') } }).then(response => {
+    age = response.data.age;
+    console.log(response.data.age);
+
+    if (age < 45) {
+      console.log(age);
+      axios.get('/findYoung').then(response => {
+        this.data = response.data;
+      }).catch(error => {
+        console.log(error);
+      });
+    } else if (age < 61) {
+      console.log(age);
+      axios.get('/findMiddle').then(response => {
+        this.data = response.data;
+      }).catch(error => {
+        console.log(error);
+      });
+    } else if (age > 60) {
+      console.log(age);
+      axios.get('/findOld').then(response => {
+        this.data = response.data;
+      }).catch(error => {
+        console.log(error);
+      });
+    }
+  }).catch(error => {
+    console.log(error);
+  });
   },
       methods:{
         
       showPopup(index){
         this.selectedCard = this.data[index];
-        this.show = true;
+        this.show1 = true;
         document.querySelector('.overlay').style.display = 'block';
         document.querySelector('.popup').style.display = 'block';
+        this.data_id = this.data[index].id;
+        axios.get('/findAllReviews',{params:{data_id:this.data_id}}).then(response => {
+        this.data2 = response.data;
+        let id = this.data_id;
+        this.d_user_id = response.data.user_id;
+        console.log(id);
+        //发送put需要默认设置
+        axios.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded';
+
+        axios.put('/click',{id:parseInt(id)}, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }).then(response => {
+        console.log(response.data);
+        }).catch(error => {
+          console.log(error);
+        });
+        }).catch(error => {
+          console.log(error);
+        });
 
       },
       closePopup(){
-        this.show = false;
+        this.show1 = false;
         document.querySelector('.overlay').style.display = 'none';
         document.querySelector('.popup').style.display = 'none';
 
@@ -85,40 +149,6 @@ export default {
       }
     },
   };
-  // mounted() {
-  //   const cards = this.$refs.card
-  //   for (let i = 0; i < cards.length; i++) {
-  //     cards[i].addEventListener('mousemove', (e) => {
-  //       const card = e.currentTarget
-  //       const mouseX = e.clientX
-  //       const mouseY = e.clientY
-  //       const cardX = card.offsetLeft
-  //       const cardY = card.offsetTop
-  //       const translateX = (mouseX - cardX) / 50
-  //       const translateY = (mouseY - cardY) / 80
-  //       card.style.transform = `rotateY(${translateX}deg) rotateX(${-translateY}deg)`
-  //     })
-  //     cards[i].addEventListener('mouseleave', (e) => {
-  //       const card = e.currentTarget
-  //       card.style.transform = `rotateY(0deg) rotateX(0deg)`
-  //     })
-  //   }
-  // },
-  // methods:{
-  //   handleMouseMove(e) {
-  //     this.mouseX = e.pageX - this.$refs.card.offsetLeft - this.width/2;
-  //     this.mouseY = e.pageY - this.$refs.card.offsetTop - this.height/2;
-  //   },
-  //   handleMouseEnter() {
-  //     clearTimeout(this.mouseLeaveDelay);
-  //   },
-  //   handleMouseLeave() {
-  //     this.mouseLeaveDelay = setTimeout(()=>{
-  //       this.mouseX = 0;
-  //       this.mouseY = 0;
-  //     }, 1000);
-  //   }
-  // }
 </script>
 
 <style scoped lang="scss">
@@ -150,12 +180,11 @@ $returnEasing: cubic-bezier(0.445, 0.05, 0.55, 0.95);
 }
 .container {
   margin-top: 20px;
-  padding: 10px 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
-.card-wrap {
+.card1-wrap {
   margin: 20px;
   margin-top: 20px;
   transform: perspective(800px);
@@ -164,27 +193,27 @@ $returnEasing: cubic-bezier(0.445, 0.05, 0.55, 0.95);
   // background-color: #fff;
   
   &:hover {
-    .card-info {
+    .card1-info {
       transform: translateY(0);
     }
-    .card-info p {
+    .card1-info p {
       opacity: 1;
     }
-    .card-info, .card-info p {
+    .card1-info, .card1-info p {
       transition: 0.6s $hoverEasing;
     }
-    .card-info:after {
+    .card1-info:after {
       transition: 5s $hoverEasing;
       opacity: 1;
       transform: translateY(0);
     }
-    .card-bg {
+    .card1-bg {
       transition: 
         0.6s $hoverEasing,
         opacity 5s $hoverEasing;
       opacity: 0.8;
     }
-    .card {
+    .card1 {
       margin-top: 10px;
       transition:
         0.6s $hoverEasing,
@@ -199,7 +228,7 @@ $returnEasing: cubic-bezier(0.445, 0.05, 0.55, 0.95);
   }
 }
 
-.card {
+.card1 {
   position: relative;
   flex: 0 0 240px;
   width: 220px;
@@ -214,7 +243,7 @@ $returnEasing: cubic-bezier(0.445, 0.05, 0.55, 0.95);
   transition: 1s $returnEasing;
 }
 
-.card-bg {
+.card1-bg {
   opacity: 0.5;
   position: absolute;
   top: -20px; left: -20px;
@@ -230,7 +259,7 @@ $returnEasing: cubic-bezier(0.445, 0.05, 0.55, 0.95);
   pointer-events: none;
 }
 
-.card-info {
+.card1-info {
   padding: 20px;
   position: absolute;
   bottom: 0;
@@ -320,17 +349,17 @@ $returnEasing: cubic-bezier(0.445, 0.05, 0.55, 0.95);
     align-items: flex-start;
     overflow-y: scroll;
   }
-  .show {
+  .show1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: popup-show-animation 2s forwards;
+  animation: popup-show1-animation 2s forwards;
   background-color: rgb(255, 255, 255);
   z-index: 50;
 }
 
 
-@keyframes popup-show-animation {
+@keyframes popup-show1-animation {
   from {
     opacity: 0;
     transform: scale(0.5);

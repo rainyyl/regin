@@ -7,19 +7,29 @@
         <label for="id" >用户名<span class="req">*</span></label>
         <input type="text" id="id"  v-model.trim="registerForm.id" required>
       </div>
-      <div class="field-wrap">
-        <label for="phone">电话号码<span class="req">*</span></label>
-        <input type="phone" id="phone"  v-model.trim="registerForm.phone" required>
-      </div>
+      
       <div class="field-wrap">
         <label for="password">密码<span class="req">*</span></label>
         <input type="password" id="password"  v-model.trim="registerForm.password" required>
       </div>
+      
+      
       <div class="field-wrap">
         <label for="confirmPassword">确认密码<span class="req">*</span></label>
         <input type="password" id="confirmPassword" v-model.trim="registerForm.confirmPassword" required>
       </div>
-      
+      <div class="field-wrap">
+        <label for="age">年龄<span class="req">*</span></label>
+        <input type="age" id="age"  v-model.trim="registerForm.age" required>
+      </div>
+      <div class="field-wrap">
+        <label for="sex">性别<span class="req">*</span></label>
+        <input type="sex" id="sex"  v-model.trim="registerForm.sex" required>
+      </div>
+      <div class="field-wrap">
+        <label for="phone">联系方式<span class="req">*</span></label>
+        <input type="phone" id="phone"  v-model.trim="registerForm.phone" required>
+      </div>
       <button type="submit" class="button button-block">注册</button>
     </div>
     </form>
@@ -40,20 +50,29 @@ export default defineComponent({
       id:'',
       password: '',
       // confirmPassword: '',
-      phone: '',
+      age: '',
+      sex:'',
+      phone:'',
     });
 
     async function submitForm() {
       try {
-        const response = await axios.post('/register', registerForm);
-        if (response.status === '注册成功') {
+        const response = await axios.post('/register', {id:registerForm.id,
+        password:registerForm.password,sex:registerForm.sex,age:registerForm.age,
+        phone:registerForm.phone});
+        if (response.data === '注册成功') {
           // ElMessage.success('注册成功');
           console.log("success");
           window.sessionStorage.setItem('session_id', registerForm.id);
           this.$router.push('/label');
 
-        }else if(response.status === '该用户已存在，注册失败'){
+        }else if(response.data === "该用户已存在，注册失败"){
+          alert("用户名已存在，请重新注册")
           console.log("error");
+        }else if(response.data === "注册失败"){
+          alert("注册失败")
+        }else{
+          alert("似乎遇到了未知原因，您可以联系管理员发送邮件至2269324321@qq.com进行反馈")
         }
       } catch (error) {
         // ElMessage.error('注册失败，请检查用户名或邮箱是否已被使用');

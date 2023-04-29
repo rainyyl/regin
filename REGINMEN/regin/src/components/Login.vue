@@ -4,11 +4,11 @@
       <form @submit.prevent="login">
         <div class="form-group">
           <label for="id">用户名<span class="req">*</span></label>
-          <input type="text" v-model="id" id="id" required>
+          <input type="text" v-model="user.id" id="id" required>
         </div>
         <div class="form-group">
           <label for="password">密码<span class="req">*</span></label>
-          <input type="password" v-model="password" id="password" required>
+          <input type="password" v-model="user.password" id="password" required>
           <p class="forgot"><a href="#">Forgot Password?</a></p>
         </div>
         <button type="submit" class="button button-block">登录</button>
@@ -32,12 +32,17 @@
       const login = async () => {
         try {
           const response = await axios.post('/login', user);
-        if (response.status === 200) {
+          console.log(user);
+        if (response.data === "登录成功，欢迎您！") {
           // ElMessage.success('注册成功');
-          console.log("success");
+          console.log("登陆成功");
           window.sessionStorage.setItem('session_id', user.id);
           router.push('/homePage');
 
+        }else if(response.data === "登录失败，密码错误"){
+          alert("登录失败，用户名密码不匹配");
+        }else if(response.data === "登录失败，该用户不存在"){
+          alert("用户名不存在,请先注册");
         }
           // this.$router.push('/homePage')
           // do something after successful login

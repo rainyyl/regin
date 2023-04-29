@@ -6,7 +6,6 @@
   <div v-if="showHelloWorld">
     <HelloWorld msg="欢迎来到Reginmen，我们致力于为大家提供个性化的养老服务简介页面"></HelloWorld>
   </div>
- 
 </div>
 </template>
 
@@ -20,6 +19,9 @@ export default {
     // Guidance,
     HelloWorld,
   },
+  setup() {
+      window.sessionStorage.setItem('session_id', '20210011');
+  },
   data() {
     return {
       showHelloWorld: true, // 初始为显示
@@ -28,7 +30,7 @@ export default {
   
 }
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

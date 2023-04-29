@@ -11,27 +11,30 @@
         </div>
       </div>
       <div class="overlay"></div>
-      <div v-show="show" class="popup show">
+      <div v-show="show1" class="popup show1">
       <div class="split">
         <div class="left" :style="{ backgroundImage: `url(${selectedCard.vp})` }">
           
         </div>
         <div class="right">
-        <h2>{{ selectedCard.name }}</h2><br>
-        <p>{{ selectedCard.acticle }}</p>
-      </div>
-        <buttonUse @click="closePopup" class="btn" buttonText="关闭">Close</buttonUse>
+          //标题
+          <div>
+          <h2>{{ selectedCard.name }}</h2><br>
+        </div>
+
+        //内容
+        <!-- style="white-space: pre-wrap;"可以实现\n、\r的换行实现 -->
+        <p class="p2" style="white-space: pre-wrap;">{{ selectedCard.acticle }}</p>
+        
+        //评论区
+        <div v-for="(item,index) in data2" :key="index">
+        <span>{{ item.user_id }}</span>
+        <p class="p2" style="white-space: pre-wrap;">{{ item.content }}</p>
       </div>
     </div>
-      <!-- <div v-for="(item, index) in data" :key="index" class="card-wrap">
-        <div class="card" ref="card">
-          <div class="card-bg" :style="{ backgroundImage: `url(${item.bgImg})` }"></div>
-          <div class="card-info">
-            <h1>{{ item.title }}</h1>
-            <p>{{ item.description }}</p>
-          </div>
-        </div>
-      </div> -->
+      <buttonUse @click="closePopup" class="btn" buttonText="关闭">Close</buttonUse>
+      </div>
+    </div>
     </div>
   </template>
   
@@ -46,16 +49,20 @@
     data() {
       return {
         data: [],
+        data2:[],
         selectedCard:{},
-        show:false,
+        show1:false,
         id:'',
+        user_id:'',
+        data_id:'',
+        d_user_id:'',
         hoverEasing: 'cubic-bezier(0.23, 0.8, 0.32, 1)',
         returnEasing: 'cubic-bezier(0.445, 0.05, 0.45, 0.95)',
         };
       },
       mounted() {
         this.id = sessionStorage.getItem('session_id');
-      if(this.id==null){
+      if(this.id=== ''){
         this.id='20210011'
       }
       console.log(this.id)
@@ -69,13 +76,29 @@
         
       showPopup(index){
         this.selectedCard = this.data[index];
-        this.show = true;
+        this.show1 = true;
         document.querySelector('.overlay').style.display = 'block';
         document.querySelector('.popup').style.display = 'block';
+        this.data_id = this.data[index].id;
+        axios.get('/findAllReviews',{params:{data_id:this.data_id}}).then(response => {
+        this.data2 = response.data;
+        let id = this.data_id;
+        this.d_user_id = response.data.user_id;
+        console.log(id);
+        //发送put需要默认设置
+        axios.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded';
 
+        axios.put('/click',{id:parseInt(id)}, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }).then(response => {
+        console.log(response.data);
+        }).catch(error => {
+          console.log(error);
+        });
+        }).catch(error => {
+          console.log(error);
+        });
       },
       closePopup(){
-        this.show = false;
+        this.show1 = false;
         document.querySelector('.overlay').style.display = 'none';
         document.querySelector('.popup').style.display = 'none';
 
@@ -335,17 +358,17 @@
     align-items: flex-start;
     overflow-y: scroll;
   }
-  .show {
+  .show1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: popup-show-animation 2s forwards;
+  animation: popup-show1-animation 2s forwards;
   background-color: rgb(255, 255, 255);
   z-index: 50;
 }
 
 
-@keyframes popup-show-animation {
+@keyframes popup-show1-animation {
   from {
     opacity: 0;
     transform: scale(0.5);
@@ -373,6 +396,9 @@
   font-size: 24px;
   border-radius: 25px;
   padding: 5px 10pz;
+}
+.p2{
+  text-align: left;
 }
 </style>
   

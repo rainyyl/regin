@@ -26,9 +26,9 @@
   </script>
   
 <style scoped lang="scss">
-$fuschia: #79c92338;
+$fuschia: #393a382a;
 $button-bg: $fuschia;
-$button-text-color: #082403;
+$button-text-color: #ffffff;
 $baby-blue: #f8faff;
 
 
@@ -55,7 +55,7 @@ body{
   cursor: pointer;
   position: relative;
   transition: transform ease-in 0.1s, box-shadow ease-in 0.25s;
-  box-shadow: 0 2px 25px rgba(12, 123, 38, 0.37);
+  box-shadow: 0 2px 5px rgba(67, 68, 67, 0.37);
   
   &:focus {
     outline: 0;
